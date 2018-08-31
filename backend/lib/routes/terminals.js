@@ -14,15 +14,34 @@
 // limitations under the License.
 //
 
-module.exports = {
-  cloudprofiles: require('./cloudprofiles'),
-  domains: require('./domains'),
-  projects: require('./projects'),
-  shoots: require('./shoots'),
-  infrastructureSecrets: require('./infrastructureSecrets'),
-  members: require('./members'),
-  administrators: require('./administrators'),
-  journals: require('./journals'),
-  customAddonDefinitions: require('./customAddonDefinitions'),
-  terminals: require('./terminals')
-}
+'use strict'
+
+const express = require('express')
+const { terminals } = require('../services')
+
+const router = module.exports = express.Router({
+  mergeParams: true
+})
+
+router.route('/create')
+  .post(async (req, res, next) => {
+    try {
+      const cols = parseInt(req.body.cols)
+      const rows = parseInt(req.body.rows)
+      res.send(await terminals.create({cols, rows}))
+    } catch (err) {
+      next(err)
+    }
+  })
+
+router.route('/:pid/resize')
+  .put(async (req, res, next) => {
+    try {
+      const cols = parseInt(req.body.cols)
+      const rows = parseInt(req.body.rows)
+      const pid = parseInt(req.params.rows)
+      res.send(await terminals.resize({pid, cols, rows}))
+    } catch (err) {
+      next(err)
+    }
+  })

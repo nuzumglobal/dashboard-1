@@ -330,6 +330,44 @@ class CommentsSubscription extends AbstractJournalsSubscription {
   }
 }
 
+class TerminalSubscription extends AbstractSubscription {
+  constructor (socketAuthenticator) {
+    super(socketAuthenticator)
+    this.socket.on('terminal_data', (data) => {
+      if (this.subscribedTo || this.subscribeTo) {
+        const {term} = this.subscribedTo || this.subscribeTo
+        if (term) {
+          term.write(data)
+        }
+      }
+    })
+  }
+
+  subscribeTerminal ({term, pid}) {
+    this.subscribeOnNextTrigger({term, pid})
+    this.subscribe()
+  }
+
+  emitMessage ({message}) {
+    if (this.subscribedTo) {
+      const {pid} = this.subscribedTo
+      this.socket.emit('terminal_message', {pid, message})
+    }
+  }
+
+  _subscribe = async function () {
+    const {pid} = this.subscribeTo
+    this.socket.emit('terminal_connect', {pid})
+    return true
+  }
+
+  _unsubscribe () {
+    const {pid} = this.subscribedTo
+    this.socket.emit('terminal_close', {pid})
+    return true
+  }
+}
+
 const url = window.location.origin
 const socketConfig = {
   path: '/api/events',
@@ -339,13 +377,15 @@ const socketConfig = {
 
 const shootsSocketAuthenticator = new SocketAuthenticator(io(`${url}/shoots`, socketConfig))
 const journalsSocketAuthenticator = new SocketAuthenticator(io(`${url}/journals`, socketConfig))
+const terminalsSocketAuthenticator = new SocketAuthenticator(io(`${url}/terminals`, socketConfig))
 
 const shootsEmitter = Emitter(new ShootsSubscription(shootsSocketAuthenticator))
 const shootEmitter = Emitter(new ShootSubscription(shootsSocketAuthenticator))
 const journalIssuesEmitter = Emitter(new IssuesSubscription(journalsSocketAuthenticator))
 const journalCommentsEmitter = Emitter(new CommentsSubscription(journalsSocketAuthenticator))
+const terminalEmitter = Emitter(new TerminalSubscription(terminalsSocketAuthenticator))
 
-const socketAuthenticators = [shootsSocketAuthenticator, journalsSocketAuthenticator]
+const socketAuthenticators = [shootsSocketAuthenticator, journalsSocketAuthenticator, terminalsSocketAuthenticator]
 
 /* Web Socket Connection */
 
@@ -390,7 +430,8 @@ const wrapper = {
   shootsEmitter,
   shootEmitter,
   journalIssuesEmitter,
-  journalCommentsEmitter
+  journalCommentsEmitter,
+  terminalEmitter
 }
 
 window.GARDEN = {emitter: shootsEmitter}

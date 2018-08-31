@@ -35,6 +35,7 @@ const Secrets = () => import('@/pages/Secrets')
 const Members = () => import('@/pages/Members')
 const Account = () => import('@/pages/Account')
 const Administration = () => import('@/pages/Administration')
+const WebConsole = () => import('@/pages/WebConsole')
 
 Vue.use(Router)
 
@@ -231,6 +232,44 @@ export default function createRouter ({store, userManager}) {
             },
             breadcrumb: true
           }
+        },
+        {
+          path: 'namespace/:namespace/webconsole',
+          component: PlaceholderComponent,
+          meta: {
+            namespaced: true,
+            projectScope: false,
+            title: 'Web Console',
+            menu: {
+              title: 'Web Console',
+              icon: 'mdi-console'
+            },
+            breadcrumb: true,
+            toRouteName: 'WebConsole'
+          },
+          children: [
+            {
+              path: '',
+              name: 'WebConsole',
+              component: WebConsole,
+              meta: {
+                namespaced: true,
+                projectScope: false,
+                title: 'Web Console'
+              }
+            },
+            {
+              path: ':name',
+              name: 'ShootWebConsole',
+              component: WebConsole,
+              meta: {
+                namespaced: true,
+                projectScope: true,
+                title: 'Web Console',
+                toRouteName: 'WebConsole'
+              }
+            }
+          ]
         }
       ]
     }

@@ -21,7 +21,7 @@ const socketIO = require('socket.io')
 const socketIOAuth = require('socketio-auth')
 const logger = require('./logger')
 const { jwt } = require('./middleware')
-const { projects, shoots, journals, administrators } = require('./services')
+const { projects, shoots, journals, administrators, terminals } = require('./services')
 const { getIssueComments } = journals
 const watches = require('./watches')
 const { EventsEmitter, NamespacedBatchEmitter } = require('./utils/batchEmitter')
@@ -315,6 +315,45 @@ function setupJournalsNamespace (journalsNsp) {
   socketAuthentication(journalsNsp)
 }
 
+function setupTerminalsNamespace (terminalsNsp) {
+  terminalsNsp.on('connection', socket => {
+    logger.debug('Socket %s connected', socket.id)
+
+    socket.on('disconnect', onDisconnect) // Currently the terminal does not get closed in this case
+    socket.on('terminal_connect', async ({pid}) => {
+      const termPid = parseInt(pid)
+      const term = terminals.terminals[termPid]
+      logger.debug('Connected to terminal ' + term.pid)
+      socket.emit('terminal_data', terminals.terminalLogs[term.pid])
+
+      term.on('data', function (data) {
+        try {
+          socket.emit('terminal_data', data)
+        } catch (ex) {
+          // The WebSocket is not open, ignore
+        }
+      })
+    })
+
+    socket.on('terminal_message', async ({pid, message}) => {
+      const termPid = parseInt(pid)
+      const term = terminals.terminals[termPid]
+      term.write(message)
+    })
+
+    socket.on('terminal_close', async ({pid}) => {
+      const termPid = parseInt(pid)
+      const term = terminals.terminals[termPid]
+      term.kill()
+      console.log('Closed terminal ' + term.pid)
+      // Clean things up
+      delete terminals.terminals[term.pid]
+      delete terminals.terminalLogs[term.pid]
+    })
+  })
+  socketAuthentication(terminalsNsp)
+}
+
 function init () {
   const io = socketIO({
     path: '/api/events',
@@ -324,6 +363,7 @@ function init () {
   // setup namespaces
   setupShootsNamespace(io.of('/shoots'))
   setupJournalsNamespace(io.of('/journals'))
+  setupTerminalsNamespace(io.of('/terminals'))
 
   // start watches
   _.forEach(watches, (watch, resourceName) => {

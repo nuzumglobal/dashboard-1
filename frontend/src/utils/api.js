@@ -160,3 +160,12 @@ export function deleteMember ({namespace, name, user}) {
 export function getUserInfo ({user}) {
   return getResource(`/api/user`, user)
 }
+
+/* Terminals */
+export function createTerminal ({user, cols, rows}) {
+  return createResource(`/api/terminals/create`, user, {cols, rows})
+}
+
+export function resizeTerminal ({user, pid, cols, rows}) {
+  return updateResource(`/api/terminals/${pid}/resize`, user, {cols, rows})
+}
