@@ -47,37 +47,37 @@ limitations under the License.
 </template>
 
 <script>
-  import UsernamePassword from '@/components/UsernamePasswordListTile'
+import UsernamePassword from '@/components/UsernamePasswordListTile'
 
-  export default {
-    components: {
-      UsernamePassword
+export default {
+  components: {
+    UsernamePassword
+  },
+  props: {
+    info: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    grafanaUrl () {
+      return this.info.grafanaUrl || ''
     },
-    props: {
-      info: {
-        type: Object,
-        required: true
-      }
+    grafanaUrlText () {
+      return this.info.grafanaUrlText || ''
     },
-    computed: {
-      grafanaUrl () {
-        return this.info.grafanaUrl || ''
-      },
-      grafanaUrlText () {
-        return this.info.grafanaUrlText || ''
-      },
-      prometheusUrl () {
-        return this.info.prometheusUrl || ''
-      },
-      alertmanagerUrl () {
-        return this.info.alertmanagerUrl || ''
-      },
-      username () {
-        return this.info.monitoring_username || ''
-      },
-      password () {
-        return this.info.monitoring_password || ''
-      }
+    prometheusUrl () {
+      return this.info.prometheusUrl || ''
+    },
+    alertmanagerUrl () {
+      return this.info.alertmanagerUrl || ''
+    },
+    username () {
+      return this.info.monitoring_username || ''
+    },
+    password () {
+      return this.info.monitoring_password || ''
     }
   }
+}
 </script>
