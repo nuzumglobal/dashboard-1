@@ -988,7 +988,7 @@ export default {
         machineType: get(head(this.machineTypes), 'name'),
         volumeType: get(head(this.volumeTypes), 'name'),
         volumeSize: '50Gi',
-        autoScalerMin: 2,
+        autoScalerMin: 1,
         autoScalerMax: 2
       })
     },

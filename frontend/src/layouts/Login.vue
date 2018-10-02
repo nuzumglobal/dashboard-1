@@ -197,7 +197,7 @@ export default {
     }
   }
 
-  @import '~vue-snotify/styles/material.css'
+  @import "~vue-snotify/styles/material.css"
 
   .snotify-rightTop {
     top: 75px;
