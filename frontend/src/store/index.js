@@ -94,7 +94,7 @@ const getters = {
     return (cloudProfileName) => {
       const cloudProfile = getters.cloudProfileByName(cloudProfileName)
       const machineTypes = get(cloudProfile, 'data.machineTypes')
-      return filter(machineTypes, machineType => get(machineType, 'deprecated', false) === false)
+      return filter(machineTypes, machineType => get(machineType, 'advertised', true) === true)
     }
   },
   volumeTypesByCloudProfileName (state, getters) {
