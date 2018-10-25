@@ -39,7 +39,7 @@ limitations under the License.
           </v-flex>
           <v-flex lg8 xs12>
             <label class="caption grey--text text--darken-2">Main Contact</label>
-            <p class="subheading"><a :href="'mailto:'+owner" class="cyan--text text--darken-2">{{owner}}</a></p>
+            <p class="subheading"><account :account-name="owner"></account></p>
           </v-flex>
           <v-flex lg4 xs12>
             <v-tooltip top>
@@ -96,6 +96,7 @@ limitations under the License.
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import find from 'lodash/find'
+import Account from '@/components/Account'
 import UpdateDialog from '@/dialogs/ProjectDialog'
 import ConfirmDialog from '@/dialogs/ConfirmDialog'
 import TimeString from '@/components/TimeString'
@@ -105,6 +106,7 @@ import { errorDetailsFromError } from '@/utils/error'
 export default {
   name: 'administration',
   components: {
+    Account,
     UpdateDialog,
     ConfirmDialog,
     TimeString

@@ -37,7 +37,7 @@ limitations under the License.
       </v-tooltip>
     </td>
     <td class="nowrap" v-if="this.headerVisible['createdBy']">
-      {{ row.createdBy }}
+      <account :account-name="row.createdBy"></account>
     </td>
     <td class="nowrap" v-if="this.headerVisible['createdAt']">
       <v-tooltip top>
@@ -129,6 +129,7 @@ limitations under the License.
 
 <script>
 import { mapGetters } from 'vuex'
+import Account from '@/components/Account'
 import InfraIcon from '@/components/InfrastructureIcon'
 import ShootStatus from '@/components/ShootStatus'
 import StatusTags from '@/components/StatusTags'
@@ -161,7 +162,8 @@ export default {
     ShootVersion,
     JournalLabels,
     RetryOperation,
-    SelfTerminationWarning
+    SelfTerminationWarning,
+    Account
   },
   props: {
     shootItem: {
